@@ -1,111 +1,145 @@
 {% extends 'cv/base.html' %}
 
 {% block content %}
+<div class="container">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark display-6">
+            <i class="bi bi-shop text-success me-2"></i>Garage de Ventas
+        </h2>
+        <p class="text-muted">Productos y servicios tecnológicos. Revisa el estado y la descripción.</p>
+        <div style="width: 60px; height: 4px; background: #10b981; margin: 0 auto; border-radius: 2px;"></div>
+    </div>
 
-    <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden bg-white">
-        <div class="card-body p-4 p-md-5">
-            <div class="row align-items-center">
+    <div class="row g-4">
+        {% for prod in productos %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-up rounded-4 overflow-hidden bg-white {% if not prod.disponible %}agotado{% endif %}">
                 
-                <div class="col-md-3 text-center mb-3 mb-md-0">
-                    {% if perfil.foto %}
-                        <img src="{{ perfil.foto.url }}" alt="Foto Perfil" class="rounded-circle shadow img-fluid border border-4 border-success" style="width: 180px; height: 180px; object-fit: cover;">
+                <div class="position-relative">
+                    {% if prod.imagen %}
+                    <img src="{{ prod.imagen.url }}" class="card-img-top" alt="{{ prod.titulo }}" style="height: 220px; object-fit: cover;">
                     {% else %}
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 180px; height: 180px;">
-                            <i class="bi bi-person fs-1 text-muted"></i>
-                        </div>
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                        <i class="bi bi-image text-muted fs-1 opacity-25"></i>
+                    </div>
+                    {% endif %}
+                    
+                    {% if prod.disponible %}
+                        <span class="position-absolute top-0 end-0 m-3 badge rounded-pill bg-dark text-white shadow-sm px-3 py-2 fs-6">
+                            ${{ prod.precio }}
+                        </span>
+                        <span class="position-absolute bottom-0 start-0 m-3 badge rounded-1 text-uppercase fw-bold shadow-sm px-2 py-1" 
+                              style="background-color: rgba(255, 255, 255, 0.9); color: #000; font-size: 0.75rem; letter-spacing: 1px;">
+                            <i class="bi bi-tag-fill text-success me-1"></i> {{ prod.estado }}
+                        </span>
+                    {% else %}
+                        <span class="position-absolute top-0 end-0 m-3 badge rounded-pill bg-danger text-white shadow-sm px-3 py-2 fs-6">
+                            AGOTADO
+                        </span>
+                        <div class="position-absolute w-100 h-100 top-0 start-0 bg-white opacity-25"></div>
                     {% endif %}
                 </div>
 
-                <div class="col-md-9">
-                    <h1 class="fw-bold text-dark display-5 mb-1">{{ perfil.nombre }} {{ perfil.apellido }}</h1>
-                    <p class="fs-4 text-success fw-light mb-3">{{ perfil.profesion }}</p>
+                <div class="card-body p-4 d-flex flex-column">
+                    <h5 class="card-title fw-bold text-dark mb-2">
+                        {{ prod.titulo }}
+                    </h5>
                     
-                    <div class="d-flex flex-wrap gap-3 mb-2 text-muted small">
-                        <span><i class="bi bi-geo-alt-fill text-success"></i> {{ perfil.ubicacion }}</span>
-                        <span><i class="bi bi-map-fill text-success"></i> {{ perfil.sector }}</span>
-                        <span><i class="bi bi-card-text text-success"></i> Cédula: {{ perfil.dni }}</span>
-                    </div>
+                    <p class="card-text text-muted small flex-grow-1 mb-3">
+                        {{ prod.descripcion|truncatechars:60|default:"Sin descripción detallada." }}
+                    </p>
 
-                    <div class="d-flex flex-wrap gap-3 mb-4 text-muted small">
-                        <span><i class="bi bi-calendar-event-fill text-success"></i> {{ perfil.fecha_nacimiento }}</span>
-                        <span><i class="bi bi-envelope-fill text-success"></i> {{ perfil.email }}</span>
-                        <span><i class="bi bi-telephone-fill text-success"></i> {{ perfil.telefono }}</span>
-                    </div>
-
-                    <div class="bg-light p-3 rounded-3 border-start border-4 border-success">
-                        <p class="mb-0 text-secondary" style="text-align: justify;">
-                            {{ perfil.resumen|default:"Describe tu perfil profesional desde el panel de administración." }}
-                        </p>
-                    </div>
-
-                    <div class="mt-4 d-flex flex-wrap gap-2">
-                        <button class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#downloadModal">
-                            <i class="bi bi-download me-2"></i>Descargar CV
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-dark rounded-pill btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalProd{{ prod.id }}">
+                            <i class="bi bi-eye"></i> Ver detalles
                         </button>
-                        
-                        {% if cantidad_perfiles > 1 %}
-                        <a href="{% url 'lista_perfiles' %}" class="btn btn-primary rounded-pill px-4">
-                            <i class="bi bi-people-fill me-2"></i>Ver otros perfiles
-                        </a>
-                        {% endif %}
 
-                        <a href="https://wa.me/{{ perfil.telefono }}" target="_blank" class="btn btn-outline-success rounded-pill px-4">
-                            <i class="bi bi-whatsapp me-2"></i>WhatsApp
-                        </a>
+                        {% if prod.disponible %}
+                            <a href="https://wa.me/{{ perfil.telefono }}?text=Hola, me interesa: {{ prod.titulo }}" 
+                               target="_blank" 
+                               class="btn btn-success rounded-pill btn-sm fw-bold shadow-sm">
+                                <i class="bi bi-whatsapp"></i> Lo quiero
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary rounded-pill btn-sm fw-bold disabled" style="cursor: not-allowed;">
+                                <i class="bi bi-x-circle"></i> No disponible
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <h4 class="fw-bold text-secondary mb-4 ps-2 border-start border-4 border-warning">Vista General</h4>
+        <div class="modal fade" id="modalProd{{ prod.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 border-0">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold">
+                            {{ prod.titulo }} 
+                            {% if not prod.disponible %}<span class="text-danger small ms-2">(Agotado)</span>{% endif %}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% if prod.imagen %}
+                        <img src="{{ prod.imagen.url }}" class="img-fluid rounded-3 mb-3 w-100 {% if not prod.disponible %}grayscale{% endif %}" style="max-height: 300px; object-fit: contain; background: #f8f9fa;">
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-success bg-opacity-10 text-success fs-6 border border-success px-3 py-2">
+                                Precio: ${{ prod.precio }}
+                            </span>
+                            <span class="badge bg-light text-dark border px-3 py-2">
+                                Estado: {{ prod.estado }}
+                            </span>
+                        </div>
+
+                        <h6 class="fw-bold text-muted text-uppercase small mb-2">Descripción:</h6>
+                        <p class="text-secondary" style="white-space: pre-line;">{{ prod.descripcion|default:"No hay descripción adicional." }}</p>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cerrar</button>
+                        
+                        {% if prod.disponible %}
+                        <a href="https://wa.me/{{ perfil.telefono }}?text=Hola, vi el producto '{{ prod.titulo }}' y quiero comprarlo." target="_blank" class="btn btn-success rounded-pill px-4 shadow">
+                            <i class="bi bi-whatsapp me-2"></i>Comprar ahora
+                        </a>
+                        {% else %}
+                        <button class="btn btn-secondary rounded-pill px-4 disabled">Fuera de Stock</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="bg-light rounded-4 p-5 border border-dashed">
+                <i class="bi bi-bag-x fs-1 d-block mb-3 text-success opacity-50"></i>
+                <h4 class="text-muted fw-bold">El Garage está vacío</h4>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    /* Estilos normales */
+    .hover-up { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-up:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
     
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card h-100 border-0 shadow-sm rounded-4 hover-up">
-                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold text-dark"><i class="bi bi-briefcase text-success me-2"></i>Experiencia</h5>
-                    <a href="{% url 'experiencia' %}" class="btn btn-light btn-sm rounded-circle"><i class="bi bi-arrow-right"></i></a>
-                </div>
-                <div class="card-body px-4">
-                    {% for exp in ultimas_experiencias %}
-                        <div class="d-flex mb-3">
-                            <div class="me-3 mt-1 text-success"><i class="bi bi-building"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-0">{{ exp.cargo }}</h6>
-                                <small class="text-muted">{{ exp.empresa }}</small>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <p class="text-muted small">Sin registros recientes.</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card h-100 border-0 shadow-sm rounded-4 hover-up">
-                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold text-dark"><i class="bi bi-code-slash text-primary me-2"></i>Proyectos</h5>
-                    <a href="{% url 'proyectos' %}" class="btn btn-light btn-sm rounded-circle"><i class="bi bi-arrow-right"></i></a>
-                </div>
-                <div class="card-body px-4">
-                    {% for pro in ultimos_proyectos %}
-                        <div class="mb-3 border-bottom pb-2 border-light">
-                            <h6 class="fw-bold mb-1">{{ pro.titulo }}</h6>
-                            <p class="small text-muted mb-0">{{ pro.descripcion|truncatechars:50 }}</p>
-                        </div>
-                    {% empty %}
-                        <p class="text-muted small">Sin proyectos recientes.</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <style>
-        .hover-up { transition: transform 0.2s; }
-        .hover-up:hover { transform: translateY(-5px); }
-    </style>
-
+    /* ESTILOS PARA PRODUCTOS AGOTADOS */
+    .agotado {
+        filter: grayscale(100%); /* Pone todo en blanco y negro */
+        opacity: 0.8; /* Lo hace un poco transparente */
+    }
+    .agotado:hover {
+        transform: none !important; /* Quita la animación de movimiento si está agotado */
+        box-shadow: none !important;
+    }
+    /* El modal imagen también en gris si está agotado */
+    .grayscale {
+        filter: grayscale(100%);
+    }
+</style>
 {% endblock %}

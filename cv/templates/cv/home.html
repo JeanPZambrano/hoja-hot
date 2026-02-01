@@ -1,163 +1,199 @@
 {% extends 'cv/base.html' %}
-
 {% block content %}
 
-    <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden bg-white">
-        <div class="card-body p-4 p-md-5">
-            <div class="row align-items-center">
+    <div class="card border-0 shadow rounded-4 mb-5 overflow-hidden bg-white">
+        <div class="row g-0">
+            
+            <div class="col-lg-4 d-flex flex-column align-items-center justify-content-center p-4 position-relative" 
+                 style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
                 
-                <div class="col-md-3 text-center mb-3 mb-md-0">
+                <div class="position-relative mb-3">
                     {% if perfil.foto %}
-                        <img src="{{ perfil.foto.url }}" alt="Foto Perfil" class="rounded-circle shadow img-fluid border border-4 border-success" style="width: 180px; height: 180px; object-fit: cover;">
+                        <img src="{{ perfil.foto.url }}" alt="{{ perfil.nombre }}" 
+                             class="rounded-circle shadow-lg border border-5 border-white" 
+                             style="width: 220px; height: 220px; object-fit: cover;">
                     {% else %}
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 180px; height: 180px;">
-                            <i class="bi bi-person fs-1 text-muted"></i>
+                        <div class="rounded-circle bg-white border border-5 border-white d-flex align-items-center justify-content-center shadow-lg" 
+                             style="width: 220px; height: 220px;">
+                            <i class="bi bi-person-fill text-muted" style="font-size: 8rem;"></i>
                         </div>
                     {% endif %}
+                    
+                    <div class="position-absolute bottom-0 end-0 mb-3 me-3">
+                        <span class="badge bg-success border border-2 border-white rounded-circle p-2" title="Disponible">
+                            <span class="visually-hidden">Disponible</span>
+                        </span>
+                    </div>
                 </div>
 
-                <div class="col-md-9">
-                    <h1 class="fw-bold text-dark display-5 mb-1">{{ perfil.nombre }} {{ perfil.apellido }}</h1>
-                    <p class="fs-4 text-success fw-light mb-3">{{ perfil.profesion }}</p>
+                <h2 class="fw-bold text-dark mb-1 h3">{{ perfil.nombre }} {{ perfil.apellido }}</h2>
+                <div class="badge bg-white text-success shadow-sm px-3 py-2 rounded-pill fw-bold border border-success border-opacity-25">
+                    {{ perfil.profesion }}
+                </div>
+            </div>
+
+            <div class="col-lg-8 p-4 p-lg-5">
+                <div class="d-flex flex-column h-100 justify-content-center">
                     
-                    <div class="d-flex flex-wrap gap-3 mb-3 text-muted small">
-                        <span><i class="bi bi-geo-alt-fill text-success"></i> {{ perfil.ubicacion }}</span>
-                        <span><i class="bi bi-map-fill text-success"></i> {{ perfil.sector }}</span> 
-                        <span><i class="bi bi-card-text text-success"></i> DNI: {{ perfil.dni }}</span> 
-                        <span><i class="bi bi-calendar-event-fill text-success"></i> {{ perfil.fecha_nacimiento }}</span> 
-                    </div>
+                    <h5 class="text-uppercase text-muted fw-bold small letter-spacing-1 mb-2">Sobre mí</h5>
+                    <p class="text-secondary mb-4" style="line-height: 1.8; font-size: 1.05rem;">
+                        {{ perfil.resumen|default:"Profesional enfocado en resultados y aprendizaje continuo." }}
+                    </p>
 
-                    <div class="d-flex flex-wrap gap-3 mb-4 text-muted small">
-                        <span><i class="bi bi-envelope-fill text-success"></i> {{ perfil.email }}</span> 
-                        <span><i class="bi bi-telephone-fill text-success"></i> {{ perfil.telefono }}</span> 
-                    </div>
-
-                    <div class="bg-light p-3 rounded-3 border-start border-4 border-success">
-                        <p class="mb-0 text-secondary" style="text-align: justify;">
-                            {{ perfil.resumen|default:"Aquí aparecerá tu descripción personal cuando la edites en el panel de administración." }}
-                        </p>
-                    </div>
-
-                    <div class="mt-4 d-flex flex-wrap gap-2">
-                        <button class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#downloadModal">
-                            <i class="bi bi-download me-2"></i>Descargar CV
-                        </button>
-
-                        {% if cantidad_perfiles > 1 %}
-                        <a href="{% url 'lista_perfiles' %}" class="btn btn-primary rounded-pill px-4">
-                            <i class="bi bi-people-fill me-2"></i>Ver otros perfiles
-                        </a>
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        {% if perfil.ubicacion %}
+                        <div class="d-flex align-items-center bg-light px-3 py-2 rounded-3 border">
+                            <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                            <span class="text-dark fw-bold small">{{ perfil.ubicacion }}</span>
+                        </div>
                         {% endif %}
 
-                        <a href="https://wa.me/{{ perfil.telefono }}" target="_blank" class="btn btn-outline-success rounded-pill px-4">
+                        <button class="btn btn-outline-dark border-dashed px-3 py-2 rounded-3 small fw-bold" 
+                                data-bs-toggle="modal" data-bs-target="#infoModal">
+                            <i class="bi bi-eye-fill me-2"></i>Ver Credencial Completa
+                        </button>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-auto">
+                        <button class="btn btn-dark rounded-pill px-4 py-2 fw-bold shadow-sm hover-scale flex-grow-1 flex-md-grow-0 text-center" 
+                                data-bs-toggle="modal" data-bs-target="#downloadModal">
+                            <i class="bi bi-download me-2"></i>Descargar CV
+                        </button>
+                        <a href="https://wa.me/{{ perfil.telefono }}" target="_blank" 
+                           class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm hover-scale flex-grow-1 flex-md-grow-0 text-center">
                             <i class="bi bi-whatsapp me-2"></i>Contactar
                         </a>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 
-    <h4 class="fw-bold text-secondary mb-4 ps-2 border-start border-4 border-warning">Vista General</h4>
-    
     <div class="row g-4">
-        <div class="col-md-6 col-xl-6">
-            <div class="card h-100 border-0 shadow-sm rounded-4 hover-up">
-                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold text-dark"><i class="bi bi-briefcase text-success me-2"></i>Experiencia</h5>
-                    <a href="{% url 'experiencia' %}" class="btn btn-light btn-sm rounded-circle"><i class="bi bi-arrow-right"></i></a>
-                </div>
-                <div class="card-body px-4">
-                    {% for exp in ultimas_experiencias %}
-                        <div class="d-flex mb-3">
-                            <div class="me-3 mt-1 text-success"><i class="bi bi-building"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-0">{{ exp.cargo }}</h6>
-                                <small class="text-muted">{{ exp.empresa }}</small>
+        
+        <div class="col-xl-8 col-lg-7">
+            <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2">
+                <h3 class="fw-bold text-dark m-0">
+                    <i class="bi bi-rocket-takeoff-fill text-success me-2"></i>Proyectos
+                </h3>
+                <a href="{% url 'proyectos' %}" class="text-decoration-none small fw-bold text-success">Ver todos <i class="bi bi-arrow-right"></i></a>
+            </div>
+            
+            <div class="row g-4">
+                {% for pro in ultimos_proyectos %}
+                <div class="col-md-6"> 
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-up bg-white">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="rounded-circle bg-light p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <i class="bi bi-laptop text-dark fs-4"></i>
+                                </div>
+                                {% if pro.fecha %}
+                                <span class="badge bg-white border text-secondary rounded-pill small shadow-sm">
+                                    {{ pro.fecha|date:"M Y" }}
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <h5 class="fw-bold text-dark mb-1">{{ pro.titulo }}</h5>
+                            
+                            <p class="text-muted small mt-2 mb-4 flex-grow-1" style="line-height: 1.5;">
+                                {{ pro.descripcion|truncatechars:85 }}
+                            </p>
+
+                            <div class="mt-auto pt-3 border-top border-light">
+                                <div class="mb-3">
+                                    <i class="bi bi-cpu text-muted me-1 small"></i>
+                                    <span class="text-dark fw-bold small" style="font-family: monospace;">{{ pro.tecnologias|truncatechars:28 }}</span>
+                                </div>
                             </div>
                         </div>
-                    {% empty %}
-                        <p class="text-muted small">Sin registros recientes.</p>
-                    {% endfor %}
+                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
 
-        <div class="col-md-6 col-xl-6">
-            <div class="card h-100 border-0 shadow-sm rounded-4 hover-up">
-                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold text-dark"><i class="bi bi-code-slash text-primary me-2"></i>Proyectos</h5>
-                    <a href="{% url 'proyectos' %}" class="btn btn-light btn-sm rounded-circle"><i class="bi bi-arrow-right"></i></a>
-                </div>
-                <div class="card-body px-4">
-                    {% for pro in ultimos_proyectos %}
-                        <div class="mb-3 border-bottom pb-2 border-light">
-                            <h6 class="fw-bold mb-1">{{ pro.titulo }}</h6>
-                            <p class="small text-muted mb-0">{{ pro.descripcion|truncatechars:50 }}</p>
+        <div class="col-xl-4 col-lg-5">
+            <h3 class="fw-bold text-dark mb-4 pb-2 border-bottom">
+                <i class="bi bi-mortarboard-fill text-success me-2"></i>Formación
+            </h3>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="timeline">
+                    {% for edu in ultima_educacion %}
+                    <div class="timeline-item position-relative pb-4 ps-4 border-start border-2 border-success border-opacity-25 {% if forloop.last %}border-0{% endif %}">
+                        <div class="position-absolute top-0 start-0 translate-middle bg-white border border-2 border-success rounded-circle p-1 mt-1" style="width: 16px; height: 16px;"></div>
+                        
+                        <div class="ps-2">
+                            <h6 class="fw-bold text-dark mb-0">{{ edu.titulo }}</h6>
+                            <p class="text-success small fw-bold mb-1">{{ edu.institucion }}</p>
                         </div>
-                    {% empty %}
-                        <p class="text-muted small">Sin proyectos recientes.</p>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-6 col-xl-4">
-            <div class="card h-100 border-0 shadow-sm rounded-4 hover-up">
-                <div class="card-header bg-white border-0 pt-4 px-4">
-                    <h5 class="fw-bold text-dark"><i class="bi bi-mortarboard text-info me-2"></i>Educación</h5>
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 bg-success bg-gradient text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard me-2"></i>Credencial Profesional</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="card-body px-4">
-                    <ul class="list-unstyled">
-                        {% for edu in ultima_educacion %}
-                            <li class="mb-3">
-                                <div class="d-flex align-items-start">
-                                    <i class="bi bi-check2-circle text-info me-2 mt-1"></i>
-                                    <div>
-                                        <h6 class="fw-bold mb-0 small">{{ edu.titulo }}</h6>
-                                        {% if edu.descripcion %}
-                                            <p class="text-muted mb-0" style="font-size: 0.8rem; text-align: justify;">{{ edu.descripcion }}</p>
-                                        {% endif %}
-                                        <small class="text-secondary" style="font-size: 0.75rem;">{{ edu.institucion }}</small>
-                                    </div>
-                                </div>
-                            </li>
-                        {% empty %}
-                            <li class="text-muted small">Sin registros.</li>
-                        {% endfor %}
-                    </ul>
-                    <a href="{% url 'educacion' %}" class="btn btn-outline-secondary btn-sm rounded-pill w-100 mt-2">Ver historial</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-xl-8">
-            <div class="card h-100 border-0 shadow-sm rounded-4 bg-dark text-white hover-up" style="background: linear-gradient(45deg, #212529, #343a40);">
-                <div class="card-body p-4 d-flex flex-column flex-md-row align-items-center justify-content-between">
-                    <div class="mb-3 mb-md-0">
-                        <h4 class="fw-bold"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Mi Garage</h4>
-                        <p class="text-white-50 mb-0">Componentes y hardware disponibles.</p>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-4">
+                        {% if perfil.foto %}
+                        <img src="{{ perfil.foto.url }}" class="rounded-circle shadow border border-3 border-success p-1" width="100" height="100">
+                        {% endif %}
+                        <h4 class="fw-bold mt-2 mb-0">{{ perfil.nombre }} {{ perfil.apellido }}</h4>
+                        <span class="text-muted small">{{ perfil.profesion }}</span>
                     </div>
                     
-                    <div class="d-flex gap-2">
-                        {% for prod in ultimos_productos %}
-                            <div class="bg-white text-dark rounded-3 p-2 px-3 text-center" style="min-width: 100px;">
-                                <small class="d-block fw-bold text-truncate" style="max-width: 100px;">{{ prod.titulo }}</small>
-                                <span class="text-success fw-bold">${{ prod.precio }}</span>
-                            </div>
-                        {% endfor %}
-                        <a href="{% url 'garage' %}" class="btn btn-warning rounded-circle d-flex align-items-center justify-content-center ms-2" style="width: 50px; height: 50px;">
-                            <i class="bi bi-arrow-right fs-4"></i>
-                        </a>
-                    </div>
+                    <ul class="list-group list-group-flush rounded-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-envelope me-2"></i>Email</span>
+                            <span class="fw-bold text-dark text-break text-end" style="max-width: 60%;">{{ perfil.email }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-telephone me-2"></i>Teléfono</span>
+                            <span class="fw-bold text-dark">{{ perfil.telefono }}</span>
+                        </li>
+                        {% if perfil.dni %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-card-heading me-2"></i>DNI/Cédula</span>
+                            <span class="fw-bold text-dark">{{ perfil.dni }}</span>
+                        </li>
+                        {% endif %}
+                        {% if perfil.sector %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-map me-2"></i>Sector</span>
+                            <span class="fw-bold text-dark">{{ perfil.sector }}</span>
+                        </li>
+                        {% endif %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="bi bi-geo-alt me-2"></i>Ubicación</span>
+                            <span class="fw-bold text-dark">{{ perfil.ubicacion }}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer border-0 bg-light rounded-bottom-4">
+                    <button type="button" class="btn btn-dark rounded-pill w-100" data-bs-dismiss="modal">Entendido</button>
                 </div>
             </div>
         </div>
     </div>
 
     <style>
-        .hover-up { transition: transform 0.2s; }
-        .hover-up:hover { transform: translateY(-5px); }
+        .hover-scale { transition: transform 0.2s ease; }
+        .hover-scale:hover { transform: scale(1.05); }
+        .hover-up { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .hover-up:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+        .border-dashed { border-style: dashed !important; }
+        .letter-spacing-1 { letter-spacing: 1px; }
     </style>
 
 {% endblock %}

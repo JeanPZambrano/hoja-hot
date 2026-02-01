@@ -1,47 +1,50 @@
 {% extends 'cv/base.html' %}
 
 {% block content %}
-    <h2 class="section-title"><i class="bi bi-mortarboard"></i> Productos Académicos</h2>
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-success"><i class="bi bi-mortarboard-fill"></i> Productos Académicos</h2>
+        <p class="text-muted">Investigaciones, artículos y desarrollos académicos.</p>
+    </div>
 
-    <div class="row g-4 mt-2">
-        {% for edu in educacion %}
-        <div class="col-md-6">
-            
-            <div class="card h-100 border-0 shadow-sm hover-card bg-white rounded-4 overflow-hidden">
-                <div class="card-header bg-success" style="height: 6px; padding: 0;"></div>
-                
-                <div class="card-body p-4 d-flex flex-column">
-                    
+    <div class="row g-3 dynamic-grid"> 
+        {% for prod in productos_academicos %}
+        
+        <div class="col-lg-6 d-flex align-items-stretch">
+            <div class="card border-0 shadow-sm rounded-4 w-100 hover-card overflow-hidden">
+                <div class="bg-success" style="height: 5px;"></div>
+                <div class="card-body p-4">
                     <div class="d-flex align-items-start mb-3">
-                        <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                           <i class="bi bi-trophy-fill text-success fs-4"></i>
+                        <div class="d-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle flex-shrink-0" style="width: 45px; height: 45px;">
+                            <i class="bi bi-journal-text fs-5"></i>
                         </div>
-                        <div>
-                             <h5 class="card-title fw-bold mb-1 text-dark" style="font-size: 1.2rem;">{{ edu.titulo }}</h5>
+                        <div class="ms-3">
+                            <h6 class="fw-bold text-dark mb-1">{{ prod.titulo }}</h6>
+                            <div class="text-success fw-bold small">{{ prod.institucion }}</div>
+                            {% if prod.fecha %}
+                            <div class="text-muted small" style="font-size: 0.75rem;">{{ prod.fecha }}</div>
+                            {% endif %}
                         </div>
                     </div>
-
-                    <p class="card-text text-muted flex-grow-1" style="line-height: 1.6;">
-                        {{ edu.descripcion }}
-                    </p>
+                    <p class="text-secondary small mb-0">{{ prod.descripcion }}</p>
                 </div>
             </div>
         </div>
+
         {% empty %}
-        <div class="col-12 py-5 text-center text-muted">
-            <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
-            <p>Aún no hay productos académicos registrados.</p>
+        <div class="col-12 text-center py-5">
+            <div class="bg-light rounded-circle d-inline-flex p-4 mb-3 text-muted">
+                <i class="bi bi-inbox fs-1"></i>
+            </div>
+            <p class="text-muted fw-medium">No se encontraron productos académicos registrados.</p>
         </div>
         {% endfor %}
     </div>
 
     <style>
-        .hover-card {
-            transition: all 0.3s ease;
-        }
-        .hover-card:hover {
-            transform: translateY(-7px); /* Se mueve hacia arriba */
-            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.15) !important; /* Sombra verde suave */
+        .hover-card { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .hover-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important; }
+        @media (min-width: 992px) {
+            .dynamic-grid > .col-lg-6:last-child:nth-child(odd) { width: 100%; max-width: 100%; flex: 0 0 100%; }
         }
     </style>
 {% endblock %}

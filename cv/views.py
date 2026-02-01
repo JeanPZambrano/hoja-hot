@@ -1,79 +1,91 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Perfil, Experiencia, Educacion, Proyecto, Certificado, Producto, Reconocimiento, Referencia
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.conf import settings
+import weasyprint 
 
-def get_common_data():
-    """Trae los datos básicos para el encabezado y el botón de perfiles"""
-    perfiles = Perfil.objects.all()
+# IMPORTAMOS SOLO LOS NOMBRES REALES DE TUS MODELOS
+from .models import Perfil, Experiencia, Educacion, Proyecto, Certificado, Producto
+
+def get_contexto_comun():
     return {
-        'perfil': perfiles.first(),
-        'cantidad_perfiles': perfiles.count(),
+        'perfil': Perfil.objects.first(),
     }
 
-def home(request, pk=None):
-    data = get_common_data()
-    perfiles = Perfil.objects.all()
+def home(request):
+    context = get_contexto_comun()
+    context['active_tab'] = 'inicio'
+    context['hide_sidebar'] = True 
     
-    if pk:
-        data['perfil'] = get_object_or_404(Perfil, pk=pk)
-    else:
-        data['perfil'] = perfiles.first()
-
-    # CORRECCIÓN: Eliminamos .order_by('-fecha_fin') de Educacion
-    data['ultimas_experiencias'] = Experiencia.objects.all().order_by('-fecha_inicio')[:2]
-    data['ultimos_proyectos'] = Proyecto.objects.all()[:2]
-    data['ultima_educacion'] = Educacion.objects.all()[:2] 
-    data['ultimos_productos'] = Producto.objects.filter(disponible=True)[:2]
+    # Usamos Educacion porque es el nombre real de tu clase
+    context['proyectos_destacados'] = Proyecto.objects.all()[:2]
+    context['educacion_destacada'] = Educacion.objects.all().order_by('-fecha')[:2]
+    context['ultimos_proyectos'] = Proyecto.objects.all()[:2] 
+    context['ultima_educacion'] = Educacion.objects.all().order_by('-fecha')[:2]
     
-    data['hide_sidebar'] = True 
-    return render(request, 'cv/home.html', data)
-
-def lista_perfiles(request):
-    data = get_common_data()
-    data['perfiles'] = Perfil.objects.all()
-    data['hide_sidebar'] = True
-    return render(request, 'cv/lista_perfiles.html', data)
-
-def educacion(request):
-    data = get_common_data()
-    # CORRECCIÓN: Quitamos el ordenamiento por fecha inexistente
-    data['educacion'] = Educacion.objects.all() 
-    return render(request, 'cv/educacion.html', data)
+    return render(request, 'cv/home.html', context)
 
 def experiencia(request):
-    data = get_common_data()
-    data['experiencia'] = Experiencia.objects.all().order_by('-fecha_inicio')
-    return render(request, 'cv/experiencia.html', data)
+    context = get_contexto_comun()
+    context['active_tab'] = 'experiencia'
+    context['experiencia'] = Experiencia.objects.all().order_by('-fecha_inicio')
+    return render(request, 'cv/experiencia.html', context)
+
+def educacion(request):
+    context = get_contexto_comun()
+    context['active_tab'] = 'educacion'
+    # AQUÍ ESTÁ EL TRUCO: Sacamos datos de 'Educacion' pero los llamamos 'productos_academicos'
+    context['productos_academicos'] = Educacion.objects.all().order_by('-fecha')
+    return render(request, 'cv/educacion.html', context)
 
 def proyectos(request):
-    data = get_common_data()
-    data['proyectos'] = Proyecto.objects.all()
-    return render(request, 'cv/proyectos.html', data)
+    context = get_contexto_comun()
+    context['active_tab'] = 'proyectos'
+    context['proyectos'] = Proyecto.objects.all()
+    return render(request, 'cv/proyectos.html', context)
 
 def certificados(request):
-    data = get_common_data()
-    data['reconocimientos'] = Reconocimiento.objects.all().order_by('-fecha')
-    data['hide_sidebar'] = True 
-    return render(request, 'cv/certificados.html', data)
+    context = get_contexto_comun()
+    context['active_tab'] = 'certificados'
+    context['certificados'] = Certificado.objects.all()
+    return render(request, 'cv/certificados.html', context)
 
 def garage(request):
-    data = get_common_data()
-    data['productos'] = Producto.objects.all()
-    data['hide_sidebar'] = True 
-    return render(request, 'cv/garage.html', data)
+    context = get_contexto_comun()
+    context['active_tab'] = 'garage'
+    context['productos'] = Producto.objects.all()
+    return render(request, 'cv/garage.html', context)
 
-def generar_cv(request):
-    data = {
-        'perfil': Perfil.objects.first(),
-        'experiencia': Experiencia.objects.all().order_by('-fecha_inicio'),
-        # CORRECCIÓN: Quitamos el ordenamiento aquí también
-        'educacion': Educacion.objects.all(),
-        'proyectos': Proyecto.objects.all(),
-        'certificados': Certificado.objects.all(), 
-        'reconocimientos': Reconocimiento.objects.all().order_by('-fecha'),
-        'productos': Producto.objects.all(),
-    }
-    if request.GET:
-        data.update({f"show_{k}": request.GET.get(k) == 'on' for k in ['perfil', 'experiencia', 'educacion', 'proyectos', 'certificados', 'garage']})
-    else:
-        data.update({f"show_{k}": True for k in ['perfil', 'experiencia', 'educacion', 'proyectos', 'certificados', 'garage']})
-    return render(request, 'cv/cv_print.html', data)
+def descargar_cv_pdf(request):
+    if request.method == 'POST':
+        opciones = {
+            'incluir_perfil': request.POST.get('incluir_perfil') == 'on',
+            'incluir_experiencia': request.POST.get('incluir_experiencia') == 'on',
+            'incluir_educacion': request.POST.get('incluir_educacion') == 'on',
+            'incluir_proyectos': request.POST.get('incluir_proyectos') == 'on',
+            'incluir_academicos': request.POST.get('incluir_academicos') == 'on',
+            'incluir_certificados': request.POST.get('incluir_certificados') == 'on',
+        }
+        context = get_contexto_comun()
+        context['opciones'] = opciones
+        context['MEDIA_ROOT'] = settings.MEDIA_ROOT
+
+        if opciones['incluir_experiencia']: 
+            context['experiencia'] = Experiencia.objects.all().order_by('-fecha_inicio')
+        
+        # Si marcan Educación o P. Académicos, usamos el modelo Educacion
+        if opciones['incluir_educacion'] or opciones['incluir_academicos']: 
+            context['educacion'] = Educacion.objects.all().order_by('-fecha')
+            context['productos_academicos'] = context['educacion']
+            
+        if opciones['incluir_proyectos']: 
+            context['proyectos'] = Proyecto.objects.all()
+        if opciones['incluir_certificados']: 
+            context['certificados'] = Certificado.objects.all()
+
+        html = render_to_string('cv/pdf_template.html', context)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="mi_cv.pdf"'
+        weasyprint.HTML(string=html, base_url=request.build_absolute_uri()).write_pdf(response)
+        return response
+    return redirect('home')

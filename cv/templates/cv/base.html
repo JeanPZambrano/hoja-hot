@@ -6,54 +6,53 @@
     <title>{{ perfil.nombre }} | Portafolio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body { background-color: #f0fdfa; font-family: 'Segoe UI', sans-serif; padding-top: 80px; }
-        .navbar-custom { background-color: #1e293b; }
-        .sidebar-card { position: sticky; top: 100px; background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
-        .profile-img { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 4px solid #10b981; margin-bottom: 1rem; }
-        .content-card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 500px; }
-        .nav-link.active { color: #10b981 !important; font-weight: bold; }
-        .section-title { color: #10b981; font-weight: 700; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 20px; }
+        :root { --primary: #10b981; --bg-body: #f0fdfa; --bg-card: #ffffff; --text-main: #1e293b; --nav-bg: #1e293b; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-body); color: var(--text-main); padding-top: 80px; }
+        
+        /* NAVBAR */
+        .navbar-custom { background-color: var(--nav-bg); padding: 12px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .navbar-custom .nav-link { color: rgba(255,255,255,0.8) !important; font-weight: 500; margin: 0 8px; transition: 0.3s; }
+        .navbar-custom .nav-link:hover, .navbar-custom .nav-link.active { color: var(--primary) !important; font-weight: 700; }
+        .btn-admin { border: 1px solid var(--primary); color: var(--primary); border-radius: 50px; padding: 5px 20px; text-decoration: none; transition: 0.3s; }
+        .btn-admin:hover { background: var(--primary); color: white; }
 
-        /* ESTILOS DE IMPRESIÓN (Para que el PDF salga limpio) */
-        @media print {
-            @page { size: auto; margin: 10mm; }
-            .navbar-custom, .sidebar-card, .btn, .modal, footer, .no-print { display: none !important; }
-            .content-card { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; }
-            body { background-color: white !important; padding-top: 0 !important; color: black !important; }
-            a { text-decoration: none !important; color: black !important; }
-            .col-lg-8 { width: 100% !important; flex: 0 0 100%; max-width: 100%; }
-        }
+        /* SIDEBAR (Barra lateral) */
+        .sidebar-card { position: sticky; top: 100px; background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        .profile-img { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 4px solid var(--primary); margin-bottom: 1rem; }
+        
+        /* CONTENIDO */
+        .content-card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 500px; }
+        
+        /* GRID INTELIGENTE */
+        .hover-card { transition: transform 0.3s ease, box-shadow 0.3s ease; background: #fff; border: 1px solid #f1f5f9; }
+        .hover-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important; border-color: var(--primary); }
+        @media (min-width: 992px) { .dynamic-grid > .col-lg-6:last-child:nth-child(odd) { width: 100%; max-width: 100%; flex: 0 0 100%; } }
+
+        @media print { .navbar-custom, .no-print, .btn, .modal { display: none !important; } body { padding-top: 0; } }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom no-print">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{% url 'home' %}">{{ perfil.nombre }}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'experiencia' %}">Experiencia</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'educacion' %}">P. Académicos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'proyectos' %}">Proyectos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'certificados' %}">Certificados</a></li>
-                    <li class="nav-item"><a class="nav-link text-warning" href="{% url 'garage' %}">⚡ Garage</a></li>
+                    <li class="nav-item"><a class="nav-link {% if active_tab == 'inicio' %}active{% endif %}" href="{% url 'home' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link {% if active_tab == 'experiencia' %}active{% endif %}" href="{% url 'experiencia' %}">Experiencia</a></li>
+                    <li class="nav-item"><a class="nav-link {% if active_tab == 'educacion' %}active{% endif %}" href="{% url 'educacion' %}">P. Académicos</a></li>
+                    <li class="nav-item"><a class="nav-link {% if active_tab == 'proyectos' %}active{% endif %}" href="{% url 'proyectos' %}">Proyectos</a></li>
+                    <li class="nav-item"><a class="nav-link {% if active_tab == 'certificados' %}active{% endif %}" href="{% url 'certificados' %}">Certificados</a></li>
+                    <li class="nav-item"><a class="nav-link text-warning fw-bold {% if active_tab == 'garage' %}active{% endif %}" href="{% url 'garage' %}">⚡ Garage</a></li>
                 </ul>
             </div>
-            
-            <div class="d-flex align-items-center ms-3">
-                <button type="button" class="btn btn-outline-light rounded-circle me-2" data-bs-toggle="modal" data-bs-target="#downloadModal" title="Descargar PDF" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                    <i class="bi bi-file-earmark-arrow-down-fill" style="font-size: 1.2rem;"></i>
-                </button>
-
-                <a href="/admin" target="_blank" class="btn btn-outline-light rounded-circle" title="Ir al Panel de Administración" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                    <i class="bi bi-gear-fill" style="font-size: 1.2rem;"></i>
-                </a>
+            <div class="d-none d-lg-block">
+                <a href="/admin" class="btn-admin" target="_blank">Admin</a>
             </div>
-
         </div>
     </nav>
 
@@ -61,107 +60,59 @@
         <div class="row g-4">
             
             {% if not hide_sidebar %}
-            <div class="col-lg-4">
+            <div class="col-lg-4 no-print">
                 <div class="sidebar-card">
                     {% if perfil.foto %}
                     <img src="{{ perfil.foto.url }}" class="profile-img" alt="Foto">
                     {% endif %}
-                    <h3>{{ perfil.nombre }}</h3>
+                    <h3>{{ perfil.nombre }} {{ perfil.apellido }}</h3>
                     <p class="text-muted">{{ perfil.profesion }}</p>
                     <hr>
-                    <p class="small text-start"><i class="bi bi-geo-alt-fill text-success"></i> {{ perfil.ubicacion }}</p>
-                    <p class="small text-start"><i class="bi bi-envelope-fill text-success"></i> {{ perfil.email }}</p>
-                    <p class="small text-start"><i class="bi bi-telephone-fill text-success"></i> {{ perfil.telefono }}</p>
+                    <div class="text-start small">
+                        <p class="mb-2"><i class="bi bi-geo-alt-fill text-success me-2"></i> {{ perfil.ubicacion }}</p>
+                        <p class="mb-2"><i class="bi bi-envelope-fill text-success me-2"></i> {{ perfil.email }}</p>
+                        <p class="mb-2"><i class="bi bi-telephone-fill text-success me-2"></i> {{ perfil.telefono }}</p>
+                    </div>
+                    <button class="btn btn-outline-success w-100 rounded-pill mt-3" data-bs-toggle="modal" data-bs-target="#downloadModal">
+                        <i class="bi bi-file-earmark-pdf"></i> Descargar CV
+                    </button>
                 </div>
             </div>
             {% endif %}
 
             <div class="{% if hide_sidebar %}col-12{% else %}col-lg-8{% endif %}">
-                <div class="content-card h-100"> 
-                    {% block content %}
-                    {% endblock %}
-                </div>
+                {% block content %}
+                {% endblock %}
             </div>
         </div>
     </div>
 
-   <div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0">
-                <div class="modal-header border-0 bg-success text-white">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-sliders me-2"></i> Personalizar CV</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-pdf-fill me-2"></i>Generar PDF</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                
-                <form action="{% url 'generar_cv' %}" method="GET" target="_blank">
+                <form action="{% url 'descargar_cv_pdf' %}" method="POST" target="_blank">
+                    {% csrf_token %}
                     <div class="modal-body p-4">
-                        <p class="text-muted mb-3 text-center">Selecciona las secciones que quieres incluir en el PDF:</p>
-                        
-                        <div class="list-group">
-                            <label class="list-group-item d-flex gap-3">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" name="perfil" checked style="font-size: 1.3em;">
-                                <span class="pt-1 form-checked-content">
-                                    <strong>Información Personal</strong>
-                                    <small class="d-block text-muted">Foto, contacto y resumen.</small>
-                                </span>
-                            </label>
-
-                            <label class="list-group-item d-flex gap-3">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" name="experiencia" checked style="font-size: 1.3em;">
-                                <span class="pt-1 form-checked-content">
-                                    <strong>Experiencia Laboral</strong>
-                                </span>
-                            </label>
-
-                            <label class="list-group-item d-flex gap-3">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" name="educacion" checked style="font-size: 1.3em;">
-                                <span class="pt-1 form-checked-content">
-                                    <strong>Educación</strong>
-                                </span>
-                            </label>
-
-                            <label class="list-group-item d-flex gap-3">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" name="proyectos" checked style="font-size: 1.3em;">
-                                <span class="pt-1 form-checked-content">
-                                    <strong>Proyectos</strong>
-                                </span>
-                            </label>
-
-                            <label class="list-group-item d-flex gap-3">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" name="certificados" checked style="font-size: 1.3em;">
-                                <span class="pt-1 form-checked-content">
-                                    <strong>Certificados y Reconocimientos</strong>
-                                    <small class="d-block text-muted">Incluye diplomas y PDFs subidos.</small>
-                                </span>
-                            </label>
-                            
-                             <label class="list-group-item d-flex gap-3">
-                                <input class="form-check-input flex-shrink-0" type="checkbox" name="garage">
-                                <span class="pt-1 form-checked-content">
-                                    <strong>Garage (Productos)</strong>
-                                    <small class="d-block text-muted">Opcional para CV técnico.</small>
-                                </span>
-                            </label>
+                        <div class="row g-3">
+                            <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="incluir_perfil" checked> Perfil</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="incluir_experiencia" checked> Experiencia</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="incluir_educacion" checked> Educación</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="incluir_proyectos" checked> Proyectos</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="incluir_academicos"> P. Académicos</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" name="incluir_certificados"> Certificados</div></div>
                         </div>
                     </div>
-                    <div class="modal-footer border-0 justify-content-center pb-4">
-                        <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold shadow">
-                            <i class="bi bi-file-earmark-pdf-fill me-2"></i> Generar PDF
-                        </button>
+                    <div class="modal-footer border-0">
+                        <button type="submit" class="btn btn-success rounded-pill px-4">Descargar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-    <script>
-        function imprimirPagina() {
-            var myModalEl = document.getElementById('downloadModal');
-            var modal = bootstrap.Modal.getInstance(myModalEl);
-            modal.hide(); // Oculta el modal antes de imprimir
-            setTimeout(function() { window.print(); }, 500);
-        }
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

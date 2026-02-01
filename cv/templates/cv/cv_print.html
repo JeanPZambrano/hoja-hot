@@ -2,124 +2,73 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hoja de Vida - {{ perfil.nombre }}</title>
+    <title>CV - {{ perfil.nombre }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        /* Estilos para que parezca un documento de Word/PDF */
-        body { background: #525659; font-family: 'Segoe UI', serif; }
-        .page { background: white; width: 210mm; min-height: 297mm; margin: 20px auto; padding: 20mm; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        h2 { border-bottom: 2px solid #333; padding-bottom: 5px; margin-top: 30px; font-size: 1.5rem; text-transform: uppercase; color: #10b981; }
-        h4 { margin-bottom: 0; font-weight: bold; }
-        .text-justify { text-align: justify; }
-        
-        /* Ocultar botón de impresión al imprimir */
-        @media print {
-            body { background: white; margin: 0; }
-            .page { width: 100%; margin: 0; padding: 0; box-shadow: none; }
-            .no-print { display: none !important; }
-            a { text-decoration: none; color: black; }
-        }
+        body { background: white; font-family: 'Segoe UI', sans-serif; padding: 40px; color: #333; max-width: 900px; margin: 0 auto; }
+        h1 { color: #10b981; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+        h2 { font-size: 1.2rem; border-bottom: 2px solid #10b981; padding-bottom: 5px; margin-top: 25px; margin-bottom: 15px; color: #1f2937; font-weight: bold; }
+        .date { font-size: 0.85rem; color: #10b981; font-weight: 600; float: right; }
+        .contact-info { margin-bottom: 30px; font-size: 0.9rem; color: #4b5563; }
+        .contact-info span { margin-right: 15px; }
+        @media print { .no-print { display: none !important; } body { padding: 0; margin: 0; } }
     </style>
 </head>
 <body>
-
-    <div class="fixed-top p-3 no-print">
-        <button onclick="window.print()" class="btn btn-primary shadow fw-bold"><i class="bi bi-printer-fill"></i> Imprimir / Guardar PDF</button>
-        <button onclick="window.close()" class="btn btn-secondary shadow ms-2">Cerrar</button>
+    <div class="text-end mb-4 no-print">
+        <button onclick="window.print()" class="btn btn-success fw-bold">🖨️ Guardar como PDF</button>
     </div>
 
-    <div class="page">
-        
-        {% if show_perfil %}
-        <div class="text-center mb-5">
-            <h1 class="fw-bold mb-0">{{ perfil.nombre }}</h1>
-            <p class="lead text-muted">{{ perfil.profesion }}</p>
-            <div class="small text-muted">
-                <span>{{ perfil.ubicacion }}</span> | 
-                <span>{{ perfil.email }}</span> | 
-                <span>{{ perfil.telefono }}</span>
-            </div>
-            <hr class="mt-4">
-            {% if perfil.resumen %}
-            <div class="text-start mt-4">
-                <p>{{ perfil.resumen }}</p>
-            </div>
+    <div class="row border-bottom pb-4 mb-4">
+        <div class="col-8">
+            <h1>{{ perfil.nombre }} {{ perfil.apellido }}</h1>
+            <p class="fs-5 text-secondary mb-0 fw-bold">{{ perfil.profesion }}</p>
+        </div>
+        <div class="col-4 text-end">
+            {% if perfil.foto %}
+            <img src="{{ perfil.foto.url }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid #10b981;">
             {% endif %}
         </div>
-        {% endif %}
+    </div>
 
-        {% if show_experiencia %}
-        <h2>Experiencia Laboral</h2>
+    <div class="contact-info">
+        <span>📧 {{ perfil.email }}</span>
+        <span>📱 {{ perfil.telefono }}</span>
+        <span>📍 {{ perfil.ubicacion }}</span>
+        {% if perfil.dni %}<span>🆔 {{ perfil.dni }}</span>{% endif %}
+    </div>
+
+    <div class="mb-4">
+        <h2>PERFIL</h2>
+        <p>{{ perfil.resumen }}</p>
+    </div>
+
+    {% if experiencia %}
+    <div class="mb-4">
+        <h2>EXPERIENCIA</h2>
         {% for exp in experiencia %}
-        <div class="mb-4">
-            <div class="d-flex justify-content-between">
-                <h4>{{ exp.cargo }}</h4>
-                <span class="fw-bold">{{ exp.fecha_inicio }} - {{ exp.fecha_fin|default:"Presente" }}</span>
-            </div>
-            <p class="fst-italic mb-1">{{ exp.empresa }}</p>
-            <p class="text-justify small">{{ exp.descripcion }}</p>
+        <div class="mb-3">
+            <span class="date">{{ exp.fecha_inicio|date:"Y" }} - {% if exp.fecha_fin %}{{ exp.fecha_fin|date:"Y" }}{% else %}Actualidad{% endif %}</span>
+            <h5 class="fw-bold mb-0">{{ exp.cargo }}</h5>
+            <p class="text-muted mb-1">{{ exp.empresa }}</p>
+            <p class="small">{{ exp.descripcion }}</p>
         </div>
         {% endfor %}
-        {% endif %}
+    </div>
+    {% endif %}
 
-        {% if show_educacion %}
-        <h2>Formación Académica</h2>
+    {% if educacion %}
+    <div class="mb-4">
+        <h2>EDUCACIÓN</h2>
         {% for edu in educacion %}
         <div class="mb-3">
-            <div class="d-flex justify-content-between">
-                <h4>{{ edu.titulo }}</h4>
-                <span class="fw-bold">{{ edu.fecha_fin }}</span>
-            </div>
-            <p>{{ edu.institucion }}</p>
+            <h5 class="fw-bold mb-0">{{ edu.titulo }}</h5>
+            <p class="mb-0">{{ edu.institucion }}</p>
         </div>
         {% endfor %}
-        {% endif %}
-
-        {% if show_proyectos %}
-        <h2>Proyectos Destacados</h2>
-        {% for pro in proyectos %}
-        <div class="mb-3">
-            <h4>{{ pro.titulo }}</h4>
-            <p class="small text-justify">{{ pro.descripcion }}</p>
-            {% if pro.link %}
-            <small class="text-muted"><i class="bi bi-link-45deg"></i> {{ pro.link }}</small>
-            {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        {% if show_certificados %}
-        <h2>Certificaciones y Méritos</h2>
-        <ul class="list-unstyled">
-            {% for cert in certificados %}
-            <li class="mb-2"><i class="bi bi-award-fill text-success me-2"></i><strong>{{ cert.titulo }}</strong> - {{ cert.institucion }}</li>
-            {% endfor %}
-            {% for rec in reconocimientos %}
-            <li class="mb-2"><i class="bi bi-star-fill text-warning me-2"></i><strong>{{ rec.titulo }}</strong> - {{ rec.institucion }} ({{ rec.fecha }})</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-        {% if show_garage %}
-        <h2>Habilidades Técnicas / Garage</h2>
-        <div class="row">
-            {% for prod in productos %}
-            <div class="col-6 mb-2">
-                <small>• {{ prod.titulo }}</small>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
     </div>
+    {% endif %}
 
-    <script>
-        // Imprimir automáticamente al abrir
-        window.onload = function() {
-            // Descomenta la siguiente línea si quieres que se abra el diálogo de imprimir apenas cargue
-            // window.print();
-        }
-    </script>
+    <script>window.onload = function() { setTimeout(function() { window.print(); }, 500); }</script>
 </body>
 </html>

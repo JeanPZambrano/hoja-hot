@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Curriculum Vitae</title>
+    <style>
+        /* Configuración de página A4 */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        /* Layout de 2 columnas */
+        .container {
+            display: flex; /* WeasyPrint soporta Flexbox */
+            height: 100vh;
+        }
+
+        /* BARRA LATERAL (Izquierda) */
+        .sidebar {
+            width: 30%;
+            background-color: #1a1a1a; /* Oscuro elegante */
+            color: white;
+            padding: 30px 20px;
+            height: 100%;
+        }
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            background-color: #ddd;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        .sidebar h2 {
+            color: #2ecc71; /* Tu verde característico */
+            font-size: 16px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #2ecc71;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .contact-info div {
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .skill-tag {
+            background: #333;
+            padding: 4px 8px;
+            margin-bottom: 5px;
+            display: inline-block;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+
+        /* CONTENIDO PRINCIPAL (Derecha) */
+        .main-content {
+            width: 70%;
+            padding: 40px;
+            background-color: #fff;
+        }
+        .header-name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .header-role {
+            font-size: 18px;
+            color: #2ecc71;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+        
+        /* Secciones */
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a1a1a;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .item {
+            margin-bottom: 15px;
+        }
+        .item-title {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .item-subtitle {
+            color: #666;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .item-desc {
+            font-size: 12px;
+            color: #444;
+            margin-top: 5px;
+            text-align: justify;
+        }
+        .badge-date {
+            float: right;
+            font-size: 10px;
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="sidebar">
+        {% if opciones.incluir_perfil %}
+        <div class="contact-info">
+            <h2>Contacto</h2>
+            <div>Email: {{ perfil.email }}</div>
+            <div>Tel: {{ perfil.telefono }}</div>
+            <div>Ubicación: {{ perfil.ubicación }}</div>
+        </div>
+        {% endif %}
+
+        {% if opciones.incluir_skills %}
+        <div>
+            <h2>Habilidades</h2>
+            {% for skill in skills %}
+                <span class="skill-tag">{{ skill.nombre }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if opciones.incluir_educacion %}
+        <div>
+            <h2>Educación</h2>
+            {% for edu in educacion %}
+            <div style="margin-bottom: 10px;">
+                <div style="font-weight: bold; font-size: 12px;">{{ edu.titulo }}</div>
+                <div style="color: #bbb; font-size: 10px;">{{ edu.institucion }}</div>
+                <div style="color: #888; font-size: 10px;">{{ edu.fecha_fin|default:"Presente" }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="main-content">
+        
+        {% if opciones.incluir_perfil %}
+        <h1 class="header-name">{{ perfil.nombre }}</h1>
+        <div class="header-role">{{ perfil.rol }}</div>
+        <p class="item-desc">{{ perfil.descripcion }}</p>
+        {% endif %}
+
+        {% if opciones.incluir_experiencia %}
+        <div class="section-title">Experiencia Laboral</div>
+        {% for exp in experiencia %}
+        <div class="item">
+            <span class="badge-date">{{ exp.fecha_inicio }} - {% if exp.fecha_fin %}{{ exp.fecha_fin }}{% else %}Actual{% endif %}</span>
+            <div class="item-title">{{ exp.cargo }}</div>
+            <div class="item-subtitle">{{ exp.empresa }}</div>
+            <div class="item-desc">{{ exp.descripcion }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if opciones.incluir_proyectos %}
+        <div class="section-title">Proyectos</div>
+        {% for proy in proyectos %}
+        <div class="item">
+            <div class="item-title">{{ proy.titulo }}</div>
+            <div class="item-desc">{{ proy.descripcion }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if opciones.incluir_academicos %}
+        <div class="section-title">Productos Académicos</div>
+        {% for prod in productos_academicos %}
+        <div class="item">
+            <span class="badge-date">{{ prod.fecha }}</span>
+            <div class="item-title">{{ prod.titulo }}</div>
+            <div class="item-subtitle">{{ prod.institucion }}</div>
+            <div class="item-desc">{{ prod.descripcion }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+</div>
+
+</body>
+</html>
