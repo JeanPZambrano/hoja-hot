@@ -134,7 +134,10 @@
                 {% for cert in ultimos_certificados %}
                 <div class="col-6">
                     <div class="card border-0 shadow-sm rounded-3 overflow-hidden position-relative h-100">
-                        <a href="{{ cert.archivo.url }}" target="_blank" class="text-decoration-none">
+                        <a href="{% if cert.archivo %}{{ cert.archivo.url }}{% else %}#{% endif %}" 
+                           target="{% if cert.archivo %}_blank{% else %}_self{% endif %}" 
+                           class="text-decoration-none">
+                            
                             {% if cert.archivo %}
                             <img src="{{ cert.archivo.url }}" 
                                  class="w-100" 
@@ -143,6 +146,7 @@
                             {% else %}
                             <div class="bg-light w-100 d-flex align-items-center justify-content-center" style="height: 100px;"><i class="bi bi-image text-muted"></i></div>
                             {% endif %}
+                            
                             <div class="card-img-overlay d-flex align-items-end p-2 bg-dark bg-opacity-50">
                                 <small class="text-white fw-bold text-truncate w-100 shadow-sm" style="font-size: 0.75rem;">{{ cert.titulo }}</small>
                             </div>
