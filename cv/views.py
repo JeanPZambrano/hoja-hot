@@ -2,26 +2,31 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.views.decorators.clickjacking import xframe_options_exempt
 import weasyprint 
 
-# IMPORTAMOS SOLO LOS NOMBRES REALES DE TUS MODELOS
+# Importamos todos tus modelos
 from .models import Perfil, Experiencia, Educacion, Proyecto, Certificado, Producto
 
 def get_contexto_comun():
+    # Esta función ayuda a no repetir código
     return {
         'perfil': Perfil.objects.first(),
     }
+
+# --- VISTAS NORMALES (WEB) ---
 
 def home(request):
     context = get_contexto_comun()
     context['active_tab'] = 'inicio'
     context['hide_sidebar'] = True 
     
-    # Usamos Educacion porque es el nombre real de tu clase
-    context['proyectos_destacados'] = Proyecto.objects.all()[:2]
-    context['educacion_destacada'] = Educacion.objects.all().order_by('-fecha')[:2]
-    context['ultimos_proyectos'] = Proyecto.objects.all()[:2] 
+    # Resúmenes para la portada
+    context['ultimos_proyectos'] = Proyecto.objects.all().order_by('-id')[:2]
     context['ultima_educacion'] = Educacion.objects.all().order_by('-fecha')[:2]
+    context['ultima_experiencia'] = Experiencia.objects.all().order_by('-fecha_inicio')[:2]
+    context['ultimos_certificados'] = Certificado.objects.all().order_by('-id')[:4]
+    context['ultimos_productos'] = Producto.objects.filter(disponible=True)[:3]
     
     return render(request, 'cv/home.html', context)
 
@@ -34,7 +39,7 @@ def experiencia(request):
 def educacion(request):
     context = get_contexto_comun()
     context['active_tab'] = 'educacion'
-    # AQUÍ ESTÁ EL TRUCO: Sacamos datos de 'Educacion' pero los llamamos 'productos_academicos'
+    # Recuerda que P. Académicos usa el modelo 'Educacion'
     context['productos_academicos'] = Educacion.objects.all().order_by('-fecha')
     return render(request, 'cv/educacion.html', context)
 
@@ -56,8 +61,12 @@ def garage(request):
     context['productos'] = Producto.objects.all()
     return render(request, 'cv/garage.html', context)
 
+# --- VISTA GENERADOR DE PDF ---
+
+@xframe_options_exempt 
 def descargar_cv_pdf(request):
     if request.method == 'POST':
+        # 1. Capturamos qué casillas marcó el usuario
         opciones = {
             'incluir_perfil': request.POST.get('incluir_perfil') == 'on',
             'incluir_experiencia': request.POST.get('incluir_experiencia') == 'on',
@@ -66,26 +75,34 @@ def descargar_cv_pdf(request):
             'incluir_academicos': request.POST.get('incluir_academicos') == 'on',
             'incluir_certificados': request.POST.get('incluir_certificados') == 'on',
         }
+        
+        # 2. Preparamos el contexto
         context = get_contexto_comun()
         context['opciones'] = opciones
         context['MEDIA_ROOT'] = settings.MEDIA_ROOT
-
-        if opciones['incluir_experiencia']: 
-            context['experiencia'] = Experiencia.objects.all().order_by('-fecha_inicio')
         
-        # Si marcan Educación o P. Académicos, usamos el modelo Educacion
-        if opciones['incluir_educacion'] or opciones['incluir_academicos']: 
-            context['educacion'] = Educacion.objects.all().order_by('-fecha')
-            context['productos_academicos'] = context['educacion']
-            
-        if opciones['incluir_proyectos']: 
-            context['proyectos'] = Proyecto.objects.all()
-        if opciones['incluir_certificados']: 
-            context['certificados'] = Certificado.objects.all()
+        # 3. CARGAMOS TODOS LOS DATOS SIEMPRE (El HTML decidirá si mostrarlos u ocultarlos)
+        #    Esto soluciona el error de "si lo marco no aparece".
+        context['experiencia'] = Experiencia.objects.all().order_by('-fecha_inicio')
+        context['educacion'] = Educacion.objects.all().order_by('-fecha')
+        context['proyectos'] = Proyecto.objects.all()
+        context['certificados'] = Certificado.objects.all()
+        
+        # Truco: Duplicamos educación para la variable 'productos_academicos'
+        context['productos_academicos'] = context['educacion']
 
+        # 4. Renderizamos el HTML del PDF
         html = render_to_string('cv/pdf_template.html', context)
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="mi_cv.pdf"'
+        
+        # 5. Configuración para Vista Previa vs Descarga
+        accion = request.POST.get('action', 'download') 
+        tipo_visualizacion = 'inline' if accion == 'preview' else 'attachment'
+        
+        response['Content-Disposition'] = f'{tipo_visualizacion}; filename="mi_cv.pdf"'
+        
+        # 6. Generar PDF
         weasyprint.HTML(string=html, base_url=request.build_absolute_uri()).write_pdf(response)
         return response
+    
     return redirect('home')
