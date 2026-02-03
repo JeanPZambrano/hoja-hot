@@ -1,14 +1,28 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils import timezone  # <-- IMPORTANTE: Necesario para obtener la fecha de hoy
+
+# --- VALIDACIÓN INDEPENDIENTE PARA FECHA DE NACIMIENTO ---
+def validar_nacimiento(fecha):
+    """ Valida que la fecha de nacimiento no sea en el futuro """
+    if fecha:
+        hoy = timezone.now().date()
+        if fecha > hoy:
+            raise ValidationError('⛔ Error: No puedes nacer en el futuro. La fecha máxima permitida es hoy.')
 
 class Perfil(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    # QUITAMOS unique=True para evitar el error de base de datos, 
-    # pero validaremos por código abajo.
+    
     dni = models.CharField(max_length=10, verbose_name="Cédula/DNI", null=True, blank=True)
     
-    fecha_nacimiento = models.DateField(null=True, blank=True)
+    # --- AQUI SE APLICA EL VALIDADOR ---
+    fecha_nacimiento = models.DateField(
+        null=True, 
+        blank=True, 
+        validators=[validar_nacimiento] # <-- Esto bloquea fechas futuras
+    )
+    
     telefono = models.CharField(max_length=15)
     email = models.EmailField()
     profesion = models.CharField(max_length=100)
@@ -24,12 +38,10 @@ class Perfil(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
-    # --- VALIDACIÓN PERSONALIZADA PARA NO REPETIR DNI ---
     def clean(self):
         super().clean()
         if self.dni:
-            # Buscamos si existe otro perfil con el mismo DNI, excluyendo este mismo (self.pk)
-            # Esto evita que te de error al editar tu propio perfil
+            # Validación de DNI único (excluyendo el propio registro al editar)
             existe = Perfil.objects.filter(dni=self.dni).exclude(pk=self.pk).exists()
             if existe:
                 raise ValidationError(f"⛔ Error: El DNI {self.dni} ya está registrado en otro perfil.")
@@ -43,7 +55,6 @@ class Experiencia(models.Model):
     fecha_inicio = models.DateField(blank=True, null=True)
     fecha_fin = models.DateField(blank=True, null=True)
 
-    # --- NUEVOS CAMPOS ---
     logo = models.ImageField(upload_to='experiencia/logos/', null=True, blank=True, verbose_name="Logo Empresa / Imagen")
     archivo = models.FileField(upload_to='experiencia/archivos/', null=True, blank=True, verbose_name="Constancia/Archivo (PDF)")
 
@@ -59,6 +70,7 @@ class Experiencia(models.Model):
         if self.fecha_inicio and self.fecha_fin:
             if self.fecha_inicio > self.fecha_fin:
                 raise ValidationError("⛔ Error: La fecha de inicio no puede ser posterior a la fecha de fin.")
+
 class Educacion(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='educacion', verbose_name="Perfil Asociado", null=True, blank=True)
     
@@ -67,7 +79,6 @@ class Educacion(models.Model):
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción corta")
     fecha = models.DateField(null=True, blank=True, verbose_name="Fecha de Finalización")
 
-    # --- NUEVOS CAMPOS (Igual que en Experiencia) ---
     logo = models.ImageField(upload_to='educacion/logos/', null=True, blank=True, verbose_name="Logo Institución")
     archivo = models.FileField(upload_to='educacion/archivos/', null=True, blank=True, verbose_name="Archivo Adjunto (PDF)")
 
@@ -88,10 +99,7 @@ class Proyecto(models.Model):
     tecnologias = models.CharField(max_length=200, blank=True, null=True)
     link = models.URLField(blank=True, null=True)
     
-    # Este 'imagen' ya existía (quizás lo usas de portada), pero agregamos el LOGO pequeño y el ARCHIVO
     imagen = models.ImageField(upload_to='proyectos/', blank=True, null=True)
-    
-    # --- NUEVOS CAMPOS ---
     logo = models.ImageField(upload_to='proyectos/logos/', null=True, blank=True, verbose_name="Logo Proyecto/Cliente")
     archivo = models.FileField(upload_to='proyectos/archivos/', null=True, blank=True, verbose_name="Archivo Adjunto (PDF)")
 

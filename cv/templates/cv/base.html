@@ -6,49 +6,95 @@
     <title>{{ perfil.nombre }} | Portafolio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #10b981; --bg-body: #f0fdfa; --bg-card: #ffffff; --text-main: #1e293b; --nav-bg: #1e293b; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-body); color: var(--text-main); padding-top: 80px; }
+        :root { 
+            --primary: #000000; 
+            --secondary: #6c757d;
+            --accent: #111111;
+            --bg-body: #ffffff; 
+            --bg-card: #f8f9fa; 
+            --text-main: #121212; 
+            --border-color: #e5e5e5;
+        }
         
-        /* NAVBAR */
-        .navbar-custom { background-color: var(--nav-bg); padding: 12px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .navbar-custom .nav-link { color: rgba(255,255,255,0.8) !important; font-weight: 500; margin: 0 8px; transition: 0.3s; }
-        .navbar-custom .nav-link:hover, .navbar-custom .nav-link.active { color: var(--primary) !important; font-weight: 700; }
-        .btn-admin { border: 1px solid var(--primary); color: var(--primary); border-radius: 50px; padding: 5px 20px; text-decoration: none; transition: 0.3s; }
-        .btn-admin:hover { background: var(--primary); color: white; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            padding-top: 80px; 
+        }
+        
+        /* NAVBAR ESTILO MINIMALISTA */
+        .navbar-custom { 
+            background-color: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            padding: 15px 0; 
+            border-bottom: 1px solid var(--border-color);
+        }
+        .navbar-custom .navbar-brand { color: #000 !important; font-weight: 800; letter-spacing: -0.5px; }
+        .navbar-custom .nav-link { color: #666 !important; font-weight: 500; margin: 0 10px; transition: 0.3s; font-size: 0.95rem; }
+        .navbar-custom .nav-link:hover, .navbar-custom .nav-link.active { color: #000 !important; font-weight: 700; }
+        
+        /* BOTON ADMIN DISCRETO */
+        .btn-admin { 
+            border: 1px solid #000; color: #000; border-radius: 4px; 
+            padding: 6px 20px; text-decoration: none; transition: 0.3s; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-admin:hover { background: #000; color: white; }
 
-        /* CONTENT */
-        .content-container { max-width: 1100px; margin: 0 auto; }
+        /* CONTENEDOR */
+        .content-container { max-width: 1000px; margin: 0 auto; }
         
-        /* HOVER EFFECTS */
-        .hover-card { transition: transform 0.3s ease, box-shadow 0.3s ease; background: #fff; border: 1px solid #f1f5f9; }
-        .hover-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important; border-color: var(--primary); }
+        /* TARJETAS MODERNAS (Borde fino, poca sombra) */
+        .card, .hover-card { 
+            background: #fff; 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; /* Redondeado sutil */
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: none;
+        }
+        .hover-card:hover { 
+            transform: translateY(-4px); 
+            border-color: #000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
         
+        /* BOTONES GLOBALES */
+        .btn-primary, .btn-success { background-color: #000; border-color: #000; color: #fff; border-radius: 8px; padding: 10px 24px; font-weight: 600; }
+        .btn-primary:hover, .btn-success:hover { background-color: #333; border-color: #333; }
+        
+        .btn-outline-primary, .btn-outline-success { color: #000; border-color: #000; border-radius: 8px; }
+        .btn-outline-primary:hover, .btn-outline-success:hover { background-color: #000; color: #fff; border-color: #000; }
+
+        /* TEXTOS Y BADGES */
+        .text-success { color: #000 !important; } /* Reemplazamos verde por negro */
+        .bg-success { background-color: #000 !important; }
+        .badge { font-weight: 500; letter-spacing: 0.5px; }
+
         /* SMART GRID */
         @media (min-width: 992px) { .dynamic-grid > .col-lg-6:last-child:nth-child(odd) { width: 100%; max-width: 100%; flex: 0 0 100%; } }
-
         @media print { .navbar-custom, .no-print, .btn, .modal { display: none !important; } body { padding-top: 0; } }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom no-print">
+    <nav class="navbar navbar-expand-lg fixed-top navbar-custom no-print">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-4" href="{% url 'home' %}">{{ perfil.nombre }}</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+            <a class="navbar-brand" href="{% url 'home' %}">{{ perfil.nombre }}<span style="color:#999;">.cv</span></a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter: brightness(0);"></span>
+            </button>
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav align-items-center">
                     <li class="nav-item"><a class="nav-link {% if active_tab == 'inicio' %}active{% endif %}" href="{% url 'home' %}">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link {% if active_tab == 'experiencia' %}active{% endif %}" href="{% url 'experiencia' %}">Experiencia</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_tab == 'educacion' %}active{% endif %}" href="{% url 'educacion' %}">P. Académicos</a></li>
+                    <li class="nav-item"><a class="nav-link {% if active_tab == 'educacion' %}active{% endif %}" href="{% url 'educacion' %}">Académico</a></li>
                     <li class="nav-item"><a class="nav-link {% if active_tab == 'proyectos' %}active{% endif %}" href="{% url 'proyectos' %}">Proyectos</a></li>
-                    
                     <li class="nav-item"><a class="nav-link {% if active_tab == 'cursos' %}active{% endif %}" href="{% url 'cursos' %}">Cursos</a></li>
-                    
                     <li class="nav-item"><a class="nav-link {% if active_tab == 'certificados' %}active{% endif %}" href="{% url 'certificados' %}">Certificados</a></li>
-                    <li class="nav-item"><a class="nav-link text-warning fw-bold {% if active_tab == 'garage' %}active{% endif %}" href="{% url 'garage' %}">⚡ Garage</a></li>
+                    <li class="nav-item ms-3"><a class="nav-link px-3 py-1 bg-black text-white rounded-pill {% if active_tab == 'garage' %}active{% endif %}" href="{% url 'garage' %}" style="font-size: 0.85rem;">Garage ⚡</a></li>
                 </ul>
             </div>
             <div class="d-none d-lg-block">
@@ -65,7 +111,7 @@
     <div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0">
-                <div class="modal-header bg-success text-white">
+                <div class="modal-header bg-black text-white">
                     <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-pdf-fill me-2"></i>Generar PDF</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -73,57 +119,20 @@
                 <form id="pdfForm" action="{% url 'descargar_cv_pdf' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="action" id="pdfActionInput" value="download">
-
                     <div class="modal-body p-4">
                         <div class="row g-3">
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="incluir_perfil" value="on" checked> Perfil
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="incluir_experiencia" value="on" checked> Experiencia
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="incluir_educacion" value="on" checked> Educación
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="incluir_proyectos" value="on" checked> Proyectos
-                                </div>
-                            </div>
-                            
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="incluir_cursos" value="on" checked> Cursos
-                                </div>
-                            </div>
-                            
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="incluir_academicos" value="on"> P. Académicos
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="incluir_certificados" value="on"> Certificados
-                                </div>
-                            </div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-dark" type="checkbox" name="incluir_perfil" checked> Perfil</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-dark" type="checkbox" name="incluir_experiencia" checked> Experiencia</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-dark" type="checkbox" name="incluir_educacion" checked> Educación</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-dark" type="checkbox" name="incluir_proyectos" checked> Proyectos</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-dark" type="checkbox" name="incluir_cursos" checked> Cursos</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-dark" type="checkbox" name="incluir_academicos"> P. Académicos</div></div>
+                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-dark" type="checkbox" name="incluir_certificados"> Certificados</div></div>
                         </div>
                     </div>
-                    
                     <div class="modal-footer border-0 d-flex justify-content-between">
-                        <button type="button" onclick="submitPdf('preview')" class="btn btn-outline-success rounded-pill px-4">
-                            <i class="bi bi-eye-fill me-2"></i> Vista Previa
-                        </button>
-                        
-                        <button type="button" onclick="submitPdf('download')" class="btn btn-success rounded-pill px-4">
-                            <i class="bi bi-download me-2"></i> Descargar
-                        </button>
+                        <button type="button" onclick="submitPdf('preview')" class="btn btn-outline-dark rounded-pill px-4"><i class="bi bi-eye-fill me-2"></i> Vista Previa</button>
+                        <button type="button" onclick="submitPdf('download')" class="btn btn-dark rounded-pill px-4"><i class="bi bi-download me-2"></i> Descargar</button>
                     </div>
                 </form>
             </div>
@@ -132,49 +141,34 @@
 
     <div class="modal fade" id="previewPdfModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 90vw;">
-            <div class="modal-content rounded-4 border-0 h-100">
+            <div class="modal-content rounded-4 border-0 h-100 bg-light">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold text-dark">Vista Previa</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body p-0" style="height: 85vh;">
-                    <iframe name="pdf_preview_frame" style="width: 100%; height: 100%; border: none;"></iframe>
+                <div class="modal-body p-3" style="height: 85vh;">
+                    <iframe name="pdf_preview_frame" class="rounded-3 shadow-sm" style="width: 100%; height: 100%; border: none; background: white;"></iframe>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
         function submitPdf(actionType) {
             const form = document.getElementById('pdfForm');
             const actionInput = document.getElementById('pdfActionInput');
-            
-            // Establecer la acción (preview o download)
             actionInput.value = actionType;
-
             if (actionType === 'preview') {
-                // Si es PREVIEW:
-                // 1. Apuntar el formulario al IFRAME del modal
                 form.target = 'pdf_preview_frame';
-                
-                // 2. Abrir el modal de vista previa
                 const previewModal = new bootstrap.Modal(document.getElementById('previewPdfModal'));
                 previewModal.show();
-                
             } else {
-                // Si es DOWNLOAD:
-                // 1. Apuntar a una nueva pestaña/descarga normal
                 form.target = '_blank';
-                
-                // 2. Cerrar el modal de configuración
                 const configModalEl = document.getElementById('downloadModal');
                 const configModal = bootstrap.Modal.getInstance(configModalEl);
                 configModal.hide();
             }
-
-            // Enviar el formulario
             form.submit();
         }
     </script>
