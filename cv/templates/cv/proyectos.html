@@ -1,267 +1,59 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ perfil.nombre }} | Portafolio Profesional</title>
-    <meta name="description" content="Portafolio de {{ perfil.nombre }} {{ perfil.apellido }}">
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root { 
-            --primary: #000000; 
-            --bg-body: #ffffff; 
-            --text-main: #121212; 
-            --text-muted: #666666;
-            --border-color: #e5e5e5;
-        }
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            padding-top: 80px; 
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        
-        /* NAVBAR BLUR */
-        .navbar-custom { 
-            background-color: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 12px 0; 
-            border-bottom: 1px solid var(--border-color);
-        }
-        .navbar-custom .navbar-brand { color: #000 !important; font-weight: 800; letter-spacing: -0.5px; }
-        .navbar-custom .nav-link { color: var(--text-muted) !important; font-weight: 500; margin: 0 6px; transition: all 0.2s; font-size: 0.9rem; }
-        .navbar-custom .nav-link:hover, .navbar-custom .nav-link.active { color: #000 !important; font-weight: 600; }
-        
-        /* BOTON ADMIN */
-        .btn-admin { 
-            border: 1px solid #e5e5e5; color: #000; border-radius: 6px; 
-            padding: 6px 16px; text-decoration: none; transition: 0.3s; font-size: 0.8rem; font-weight: 600;
-        }
-        .btn-admin:hover { background: #000; color: white; border-color: #000; }
-
-        /* CONTENEDOR */
-        .content-container { max-width: 1000px; margin: 0 auto; flex: 1; }
-        
-        /* TARJETAS */
-        .card, .hover-card { 
-            background: #fff; 
-            border: 1px solid var(--border-color); 
-            border-radius: 12px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .hover-card:hover { 
-            transform: translateY(-4px); 
-            border-color: #000;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-        }
-        
-        /* FOOTER */
-        .footer-custom {
-            background-color: #000;
-            color: #fff;
-            padding: 40px 0;
-            margin-top: 60px;
-        }
-        .social-link {
-            width: 36px; height: 36px;
-            display: inline-flex; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.1);
-            color: white; border-radius: 50%;
-            transition: 0.3s; text-decoration: none;
-        }
-        .social-link:hover { background: white; color: black; transform: scale(1.1); }
-
-        /* UTILIDADES */
-        .cursor-pointer { cursor: pointer; }
-        @media print { .navbar-custom, .footer-custom, .no-print, .btn, .modal { display: none !important; } body { padding-top: 0; } }
-    </style>
-</head>
-<body>
-
-    <nav class="navbar navbar-expand-lg fixed-top navbar-custom no-print">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
-                <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
-                {{ perfil.nombre }}<span style="color:#aaa; font-weight: 300;">.cv</span>
-            </a>
-            
-            <button class="navbar-toggler border-0 p-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <i class="bi bi-list fs-2 text-dark"></i>
-            </button>
-
-            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-                <ul class="navbar-nav align-items-center gap-1">
-                    <li class="nav-item"><a class="nav-link {% if active_tab == 'inicio' %}active{% endif %}" href="{% url 'home' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_tab == 'experiencia' %}active{% endif %}" href="{% url 'experiencia' %}">Experiencia</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_tab == 'educacion' %}active{% endif %}" href="{% url 'educacion' %}">Académico</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_tab == 'proyectos' %}active{% endif %}" href="{% url 'proyectos' %}">Proyectos</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_tab == 'cursos' %}active{% endif %}" href="{% url 'cursos' %}">Cursos</a></li>
-                    <li class="nav-item"><a class="nav-link {% if active_tab == 'certificados' %}active{% endif %}" href="{% url 'certificados' %}">Certificados</a></li>
-                    <li class="nav-item ms-lg-2">
-                        <a class="nav-link px-3 py-1 bg-black text-white rounded-pill shadow-sm {% if active_tab == 'garage' %}active{% endif %}" href="{% url 'garage' %}" style="font-size: 0.85rem;">
-                            <i class="bi bi-lightning-fill text-warning me-1"></i>Garage
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="d-none d-lg-block">
-                <a href="/admin" class="btn-admin" target="_blank">Admin</a>
-            </div>
+{% extends 'cv/base.html' %} {% block content %}
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold display-5">Mis Proyectos</h2>
+            <p class="text-muted">Una selección de mis trabajos más recientes</p>
+            <hr class="w-25 mx-auto border-dark border-2 opacity-100">
         </div>
-    </nav>
-
-    <div class="container py-4 content-container">
-        {% block content %}
-        {% endblock %}
     </div>
 
-    <footer class="footer-custom no-print text-center">
-        <div class="container">
-            <h5 class="fw-bold mb-1">{{ perfil.nombre }} {{ perfil.apellido }}</h5>
-            <p class="text-secondary small mb-4">{{ perfil.profesion }}</p>
-            
-            <div class="d-flex justify-content-center gap-3 mb-4">
-                <a href="mailto:{{ perfil.email }}" class="social-link" title="Email"><i class="bi bi-envelope-fill"></i></a>
-                <a href="https://wa.me/{{ perfil.telefono }}" target="_blank" class="social-link" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
-                {% if perfil.linkedin %}<a href="{{ perfil.linkedin }}" target="_blank" class="social-link"><i class="bi bi-linkedin"></i></a>{% endif %}
-                {% if perfil.github %}<a href="{{ perfil.github }}" target="_blank" class="social-link"><i class="bi bi-github"></i></a>{% endif %}
-                <button type="button" class="social-link border-0 cursor-pointer" data-bs-toggle="modal" data-bs-target="#credencialModal" title="Credencial">
-                    <i class="bi bi-person-badge"></i>
-                </button>
-            </div>
-            
-            <div class="border-top border-secondary border-opacity-25 pt-4">
-                <p class="small text-secondary m-0">&copy; {% now "Y" %} Desarrollado con Django. Derechos Reservados.</p>
-            </div>
-        </div>
-    </footer>
-
-    <div class="modal fade" id="credencialModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow-lg">
-                <div class="modal-header border-0 bg-black text-white">
-                    <h5 class="modal-title fw-bold fs-6"><i class="bi bi-person-vcard me-2"></i>Credencial Profesional</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4 bg-white">
-                    <div class="text-center mb-4">
-                        {% if perfil.foto %}
-                        <img src="{{ perfil.foto.url }}" class="rounded-circle shadow border border-3 border-dark p-1" width="100" height="100" style="object-fit: cover;">
-                        {% else %}
-                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center border" style="width: 100px; height: 100px;"><i class="bi bi-person fs-1 text-muted"></i></div>
-                        {% endif %}
-                        <h4 class="fw-bold mt-3 mb-0 text-dark">{{ perfil.nombre }} {{ perfil.apellido }}</h4>
-                        <span class="badge bg-light text-dark border mt-1">{{ perfil.profesion }}</span>
+    <div class="row g-4">
+        {% for proyecto in proyectos %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 hover-card border-0 shadow-sm">
+                {% if proyecto.imagen %}
+                    <img src="{{ proyecto.imagen.url }}" class="card-img-top" alt="{{ proyecto.titulo }}" style="height: 200px; object-fit: cover; border-radius: 12px 12px 0 0;">
+                {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px; border-radius: 12px 12px 0 0;">
+                        <i class="bi bi-code-slash fs-1 text-muted"></i>
                     </div>
+                {% endif %}
+                
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold text-dark">{{ proyecto.titulo }}</h5>
+                    <p class="card-text text-secondary small">{{ proyecto.descripcion|truncatewords:30 }}</p>
                     
-                    <ul class="list-group list-group-flush small">
-                        <li class="list-group-item d-flex justify-content-between py-3">
-                            <span class="text-muted"><i class="bi bi-envelope me-2"></i>Email</span>
-                            <span class="fw-bold text-end text-break">{{ perfil.email }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between py-3">
-                            <span class="text-muted"><i class="bi bi-phone me-2"></i>Móvil</span>
-                            <span class="fw-bold">{{ perfil.telefono }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between py-3">
-                            <span class="text-muted"><i class="bi bi-card-heading me-2"></i>ID/DNI</span>
-                            <span class="fw-bold">{{ perfil.dni }}</span>
-                        </li>
-                        {% if perfil.fecha_nacimiento %}
-                        <li class="list-group-item d-flex justify-content-between py-3">
-                            <span class="text-muted"><i class="bi bi-cake2 me-2"></i>Nacimiento</span>
-                            <span class="fw-bold">{{ perfil.fecha_nacimiento|date:"d F Y" }}</span>
-                        </li>
-                        {% endif %}
-                        <li class="list-group-item d-flex justify-content-between py-3">
-                            <span class="text-muted"><i class="bi bi-geo-alt me-2"></i>Ciudad</span>
-                            <span class="fw-bold text-end">{{ perfil.ubicacion }}</span>
-                        </li>
-                        {% if perfil.sector %}
-                        <li class="list-group-item d-flex justify-content-between py-3">
-                            <span class="text-muted"><i class="bi bi-map me-2"></i>Barrio/Sector</span>
-                            <span class="fw-bold text-end">{{ perfil.sector }}</span>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0">
-                <div class="modal-header bg-black text-white">
-                    <h5 class="modal-title fw-bold fs-6"><i class="bi bi-file-earmark-pdf-fill me-2"></i>Configurar Descarga</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    {% if proyecto.tecnologias %}
+                    <div class="mb-3">
+                        <span class="badge bg-light text-dark border">{{ proyecto.tecnologias }}</span>
+                    </div>
+                    {% endif %}
                 </div>
                 
-                <form id="pdfForm" action="{% url 'descargar_cv_pdf' %}" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" id="pdfActionInput" value="download">
-                    <div class="modal-body p-4">
-                        <p class="text-muted small mb-3">Secciones a incluir:</p>
-                        <div class="row g-3">
-                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-secondary" type="checkbox" name="incluir_perfil" checked> <label class="small fw-bold">Perfil</label></div></div>
-                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-secondary" type="checkbox" name="incluir_experiencia" checked> <label class="small fw-bold">Experiencia</label></div></div>
-                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-secondary" type="checkbox" name="incluir_educacion" checked> <label class="small fw-bold">Educación</label></div></div>
-                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-secondary" type="checkbox" name="incluir_proyectos" checked> <label class="small fw-bold">Proyectos</label></div></div>
-                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-secondary" type="checkbox" name="incluir_cursos" checked> <label class="small fw-bold">Cursos</label></div></div>
-                            <div class="col-6"><div class="form-check"><input class="form-check-input bg-dark border-secondary" type="checkbox" name="incluir_academicos"> <label class="small fw-bold">P. Académicos</label></div></div>
-                        </div>
+                <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                    <div class="d-flex justify-content-between">
+                        {% if proyecto.url_github %}
+                            <a href="{{ proyecto.url_github }}" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                                <i class="bi bi-github me-1"></i> Código
+                            </a>
+                        {% endif %}
+                        {% if proyecto.url_demo %}
+                            <a href="{{ proyecto.url_demo }}" target="_blank" class="btn btn-sm btn-dark rounded-pill px-3">
+                                <i class="bi bi-eye me-1"></i> Demo
+                            </a>
+                        {% endif %}
                     </div>
-                    <div class="modal-footer border-0 d-flex justify-content-between pt-0 pb-4 px-4">
-                        <button type="button" onclick="submitPdf('preview')" class="btn btn-outline-dark rounded-pill px-4 w-50 me-2"><i class="bi bi-eye me-2"></i>Ver</button>
-                        <button type="button" onclick="submitPdf('download')" class="btn btn-dark rounded-pill px-4 w-50"><i class="bi bi-download me-2"></i>PDF</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="previewPdfModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 90vw;">
-            <div class="modal-content rounded-4 border-0 h-100 bg-light">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-dark fs-6">Vista Previa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-3" style="height: 85vh;">
-                    <iframe name="pdf_preview_frame" class="rounded-3 shadow-sm" style="width: 100%; height: 100%; border: none; background: white;"></iframe>
                 </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-folder-x display-1 text-muted opacity-25"></i>
+            <p class="mt-3 fs-5 text-secondary">Aún no hay proyectos publicados.</p>
+            <a href="/admin" class="btn btn-dark mt-2">Agregar mi primer proyecto</a>
+        </div>
+        {% endfor %}
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function submitPdf(actionType) {
-            const form = document.getElementById('pdfForm');
-            const actionInput = document.getElementById('pdfActionInput');
-            actionInput.value = actionType;
-            if (actionType === 'preview') {
-                form.target = 'pdf_preview_frame';
-                const previewModal = new bootstrap.Modal(document.getElementById('previewPdfModal'));
-                previewModal.show();
-            } else {
-                form.target = '_blank';
-                const configModalEl = document.getElementById('downloadModal');
-                const configModal = bootstrap.Modal.getInstance(configModalEl);
-                configModal.hide();
-            }
-            form.submit();
-        }
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}
